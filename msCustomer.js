@@ -38,6 +38,7 @@ Include the ids, names, and prices of products for sale.
 // --------- CONNECTIONS --------- --------- --------- --------- --------- --------- --------- --------- --------- //
 
 var mysql = require("mysql");
+var inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -68,8 +69,8 @@ connection.connect(function(err) {
   console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - -");
   console.log(" ");
   console.log("            What are you in the market for?            ");
-  console.log("                                                       ");
-  displayProducts();
+  console.log("                                                       ");  
+  askForOrder();
   connection.end();
 });
 
@@ -85,3 +86,31 @@ function displayProducts(){
     console.log("_____")
   })
 }
+
+function askForOrder() {
+  displayProducts();
+  inquirer
+    .prompt([
+        {
+          name: "product",
+          message: "What would you like to buy?"
+        }, {
+          name: "quantity",
+          message: "How many would you like to buy?"
+        }
+    ]).then(function(answers){
+      var newOrder = new Order(answers.product, answers.quantity);
+      newOrder.printInfo();
+      console.log("done");
+      }
+    )
+}
+
+
+function Order(product, quantity) {
+  this.product = product;
+  this.quantity = quantity;
+  this.printInfo = function() {
+    console.log(`Your order: \nProduct: ${this.product} \nQuantity: ${this.quantity}`);
+  };
+};
