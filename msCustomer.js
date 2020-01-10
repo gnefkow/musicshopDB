@@ -61,6 +61,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
+  
   console.log("                                                       ");
   console.log("                                                       ");
   console.log("-------------------------------------------------------");
@@ -70,9 +71,75 @@ connection.connect(function(err) {
   console.log(" ");
   console.log("            What are you in the market for?            ");
   console.log("                                                       ");  
-  askForOrder();
+  welcomeMessage();
   connection.end();
 });
+
+
+
+// --------- ORDER --------- --------- --------- --------- --------- --------- --------- --------- --------- //
+
+var productArr = [];
+var priceArr = [];
+
+function ProductOrder(product, productPrice, quantity, productTotal) {
+  this.product = product;
+  this.productPrice = productPrice;
+  this.quantity = quantity;
+  this.productTotal = productTotal;
+  this.printInfo = function() {
+  console.log(`Your order: \nProduct: ${this.product} \nPrice: ${this.productPrice} \nQuantity: ${this.quantity} \nTotal for this item: $${this.productTotal}`);
+  };
+};
+
+
+// --------- FUNCTIONS --------- --------- --------- --------- --------- --------- --------- --------- --------- //
+
+// Welcome Message
+// The main reason for this is just to give lag so the list can populate :)
+  function welcomeMessage(){
+    generateProductArr();
+    // generatePriceArr();
+    inquirer
+      .prompt([
+        {
+          name: "confirm",
+          type: "confirm",
+          message: "Would you like to buy an instrument?",
+          // choices: ["Yes", "No"]
+        }
+      ])
+      .then(function(answer){
+        if (answer.confirm === true){
+          askForOrder();
+        } else if (answer.confirm === false){
+          console.log("Then don't touch anything!")
+        }
+      })
+  }
+
+
+// Pull PRODUCTS from data base  
+  function generateProductArr(){
+    connection.query("SELECT * FROM inventory", function(err,res){
+      if(err) throw err;
+      for (var i = 0; i < res.length; i++){
+        var product = `${res[i].product_name} | $${res[i].price}`;
+        productArr.push(product);
+      }
+    })
+  }
+
+  // Pull PRICES from data base
+  // function generatePriceArr(){
+  //   connection.query("SELECT * FROM inventory", function(err,res){
+  //     if(err) throw err;
+  //     for (var i = 0; i < res.length; i++){
+  //       var product = res[i].price;
+  //       priceArr.push(product);
+  //     }
+  //   })
+  // }
 
 
 function displayProducts(){
@@ -88,29 +155,35 @@ function displayProducts(){
 }
 
 function askForOrder() {
-  displayProducts();
   inquirer
     .prompt([
         {
           name: "product",
-          message: "What would you like to buy?"
+          type: "rawlist",
+          message: "What would you like to buy?",
+          choices: productArr
         }, {
           name: "quantity",
+          type: "number",
           message: "How many would you like to buy?"
         }
     ]).then(function(answers){
-      var newOrder = new Order(answers.product, answers.quantity);
+      // Parse the Price:
+        var priceClip = answers.product;
+        priceClip = priceClip.split("$");
+        var price = parseInt(priceClip[1]);
+
+      // Parse the Product
+        var productClip = answers.product;
+        productClip = productClip.split(" |");
+        var product = productClip[0];
+
+      var productTotal = answers.quantity * price;
+      var newOrder = new ProductOrder(product, price, answers.quantity, productTotal);
       newOrder.printInfo();
-      console.log("done");
+      
       }
-    )
-}
-
-
-function Order(product, quantity) {
-  this.product = product;
-  this.quantity = quantity;
-  this.printInfo = function() {
-    console.log(`Your order: \nProduct: ${this.product} \nQuantity: ${this.quantity}`);
-  };
+    )    
 };
+
+
