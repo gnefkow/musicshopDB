@@ -105,6 +105,19 @@ function restock(){
   restockBaritone();
   restockFrenchHorn();
   restockTuba();
+  console.log("                                                       ");  
+  console.log("                                                       ");  
+  console.log("                                                       ");  
+  console.log("                   *** Restocking ***                  ");  
+  console.log("                                                       ");  
+  console.log("                                                       ");  
+  console.log("                                                       ");  
+  console.log("-------------------------------------------------------");
+  console.log("//---                                             ---//");  
+  console.log("//---             INVENTORY RESTOCKED!            ---//");
+  console.log("//---                                             ---//"); 
+  console.log("-------------------------------------------------------");
+  console.log("                                                       ");  
 }
 
 
