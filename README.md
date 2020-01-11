@@ -1,5 +1,4 @@
 <h1>Music Shop</h1>
-<hr>
 <p>This is an app that runs in terminal simulating a musical shop online. Users can:</p>
 <ul>
   <li>Buy an instument</li>
@@ -10,7 +9,6 @@
 <br>
 
 <h1>Tech</h1>
-<hr>
 <ul>This app uses</ul>
   <li>SQL Database</li>
   <li>Node.js</li>
@@ -19,7 +17,6 @@
 <br>
 
 <h1>How does it work for the user?</h1>
-<hr>
 <h2>The user can buy one or more products</h2>
 <img src="./readme/gif-buyproduct.gif">
 <br>
