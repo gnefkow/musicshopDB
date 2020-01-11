@@ -7,6 +7,8 @@
 </ul>
 <br>
 <br>
+<br>
+<br>
 
 <h1>Tech</h1>
 <ul>This app uses</ul>
@@ -15,16 +17,22 @@
   <li>MySQL Node Package</li>
 <br>
 <br>
+<br>
+<br>
 
 <h1>How does it work for the user?</h1>
 <h2>The user can buy one or more products</h2>
 <img src="./readme/gif-buyproduct.gif">
 <br>
 <br>
+<br>
+<br>
 
 
 <h2>The user cannot buy more inventory than is in stock</h2>
 <img src="./readme/gif-buytoomuch.gif">
+<br>
+<br>
 <br>
 <br>
 
@@ -35,9 +43,13 @@
 <p>Check the stock with msINV.js</p>
 <br>
 <br>
+<br>
+<br>
 
 <h2>The shop owner can restock inventory</h2>
 <img src="./readme/gif-restock.gif">
 <p>With msINV.js, we can restock the inventory if it gets too low.</p>
+<br>
+<br>
 <br>
 <br>
