@@ -80,7 +80,6 @@ connection.connect(function(err) {
 // --------- ORDER --------- --------- --------- --------- --------- --------- --------- --------- --------- //
 
 var productArr = [];
-var priceArr = [];
 
 function ProductOrder(product, productPrice, quantity, productTotal) {
   this.product = product;
@@ -159,6 +158,15 @@ function askForOrder() {
           message: "How many would you like to buy?"
         }
     ]).then(function(answers){
+    var orderValid;
+    checkOrderValidity()
+    if (orderValid == true) {placeOrder()} else {console.log("denied")}
+
+    function checkOrderValidity(){
+      orderValid = true;
+    }  
+
+    function placeOrder(){
       //Parse String:
       var productStr = answers.product;
       // productStr = productStr.split("|");
@@ -187,8 +195,9 @@ function askForOrder() {
       // Display Updated Inventory:
       // FOR DEV PURPOSES
       displayUpdatedInventory();  
-      }
-    )    
+    }
+
+  })    
 };
 
 
