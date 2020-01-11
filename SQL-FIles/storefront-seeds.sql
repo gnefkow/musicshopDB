@@ -4,13 +4,13 @@ SELECT * FROM inventory;
 USE storefront_db;
 -- GUITARS --
 INSERT INTO inventory (product_name, department_name, price, stock)
-VALUES ("Guitar_Classical", "Guitars", 500.00, 20);
+VALUES ("Classical Guitar", "Guitars", 500.00, 20);
 
 INSERT INTO inventory (product_name, department_name, price, stock)
-VALUES ("Guitar_Electric", "Guitars", 350.00, 20);
+VALUES ("Electric Guitar", "Guitars", 350.00, 20);
 
 INSERT INTO inventory (product_name, department_name, price, stock)
-VALUES ("Guitar_Acoustic", "Guitars", 400.00, 20);
+VALUES ("Acoustic Guitar", "Guitars", 400.00, 20);
 
 INSERT INTO inventory (product_name, department_name, price, stock)
 VALUES ("Ukelele", "Guitars", 250.00, 20);
