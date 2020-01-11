@@ -20,4 +20,4 @@
 
 <h1>How does it work?</h1>
 <h2>As a customer:</h2>
-<img src="./readme/gif-buyproduct.gif>
+<img src="./readme/gif-buyproduct.gif">
