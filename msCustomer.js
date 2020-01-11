@@ -1,5 +1,7 @@
 /*  REQUIREMENTS
 
+WEEK 11 has most of the stuff needed for this
+
 Running this application will first display all of the items available for sale. 
 Include the ids, names, and prices of products for sale.
 
@@ -81,15 +83,7 @@ connection.connect(function(err) {
 
 var productArr = [];
 
-function ProductOrder(product, productPrice, quantity, productTotal) {
-  this.product = product;
-  this.productPrice = productPrice;
-  this.quantity = quantity;
-  this.productTotal = productTotal;
-  this.printInfo = function() {
-  console.log(`Your order: \nProduct: ${this.product} \nPrice: $${this.productPrice} \nQuantity: ${this.quantity} \nTotal for this item: $${this.productTotal}`);
-  };
-};
+
 
 
 // --------- FUNCTIONS --------- --------- --------- --------- --------- --------- --------- --------- --------- //
@@ -116,6 +110,18 @@ function ProductOrder(product, productPrice, quantity, productTotal) {
       })
   }
 
+
+
+// ORDER CONSTRUCTOR
+  function ProductOrder(product, productPrice, quantity, productTotal) {
+    this.product = product;
+    this.productPrice = productPrice;
+    this.quantity = quantity;
+    this.productTotal = productTotal;
+    this.printInfo = function() {
+    console.log(`Your order: \nProduct: ${this.product} \nPrice: $${this.productPrice} \nQuantity: ${this.quantity} \nTotal for this item: $${this.productTotal}`);
+    };
+  };
 
 // Pull PRODUCTS from data base  
   function generateProductArr(){
@@ -158,18 +164,36 @@ function askForOrder() {
           message: "How many would you like to buy?"
         }
     ]).then(function(answers){
-    var orderValid;
-    checkOrderValidity()
-    if (orderValid == true) {placeOrder()} else {console.log("denied")}
+      var orderValid;
+      checkOrderValidity()
+      if (orderValid == true) {placeOrder()} else {console.log("denied")}
 
     function checkOrderValidity(){
-      orderValid = true;
+    // Parse the Inventory:
+    var productStr = answers.product;  
+    var stock = productStr.split(": ")  //START HERE, this should get the current inventory
+           stock = parseInt(stock[1]);
+    var orderQty = answers.quantity;
+      console.log(`This item has ${stock} in stock.`)
+      console.log(`the order is for ${answers.quantity}`)
+
+      // Some math to determine whether there is enough stock
+      if (stock - orderQty > 0) {
+        console.log("all good")
+        orderValid = true;
+      }
+      else {
+        console.log("not ok")
+        orderValid = false;
+      }
+      
+      
+      
     }  
 
     function placeOrder(){
       //Parse String:
-      var productStr = answers.product;
-      // productStr = productStr.split("|");
+        var productStr = answers.product;
 
       // Parse the Inventory:
         var stock = productStr.split(": ")
