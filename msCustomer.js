@@ -71,7 +71,7 @@ connection.connect(function(err) {
   console.log("//---                  MUSIC SHOP!                ---//");
   console.log("- - - - - - - - - - - - - - - - - - - - - - - - - - - -");
   console.log(" ");
-  console.log("            What are you in the market for?            ");
+  console.log("                                                       ");  
   console.log("                                                       ");  
   welcomeMessage();
   // connection.end();
@@ -82,6 +82,7 @@ connection.connect(function(err) {
 // --------- ORDER --------- --------- --------- --------- --------- --------- --------- --------- --------- //
 
 var productArr = [];
+var totalBill = 0;
 
 
 
@@ -97,15 +98,24 @@ var productArr = [];
       .prompt([
         {
           name: "confirm",
-          type: "confirm",
+          type: "list",
           message: "Would you like to buy an instrument?",
+          choices: ["Yes, I'd like to buy an instrument", "No, I don't want anything"]
         }
       ])
       .then(function(answer){
-        if (answer.confirm === true){
+        if (answer.confirm === "Yes, I'd like to buy an instrument"){
           askForOrder();
-        } else if (answer.confirm === false){
+        } else {
+          console.log("")
+          console.log("")
+          console.log("")
+          console.log("")
           console.log("Then don't touch anything!")
+          console.log("")
+          console.log("")
+          console.log("-------------------------------------------------------");
+          connection.end();
         }
       })
   }
@@ -119,7 +129,12 @@ var productArr = [];
     this.quantity = quantity;
     this.productTotal = productTotal;
     this.printInfo = function() {
-    console.log(`Your order: \nProduct: ${this.product} \nPrice: $${this.productPrice} \nQuantity: ${this.quantity} \nTotal for this item: $${this.productTotal}`);
+    console.log(
+      `\n  Your order: 
+       \n     Product: ${this.product} 
+       \n     Price: $${this.productPrice} 
+       \n     Quantity: ${this.quantity} 
+       \n     Total for this item: $${this.productTotal}`);
     };
   };
 
@@ -138,17 +153,7 @@ var productArr = [];
 
 
 
-function displayProducts(){
-  console.log("OUR PRODUCTS:")
-  console.log("_____")
-  connection.query("SELECT * FROM inventory", function(err, res) {
-    if (err) throw err;
-    for (var i = 0; i < res.length; i++){
-      console.log(`${res[i].stock}|${res[i].product_name}|${res[i].price}`)
-    }
-    console.log("_____")
-  })
-}
+
 
 function askForOrder() {
   inquirer
@@ -166,29 +171,34 @@ function askForOrder() {
     ]).then(function(answers){
       var orderValid;
       checkOrderValidity()
-      if (orderValid == true) {placeOrder()} else {console.log("denied")}
+
+    // --- askForOrder Functions:
 
     function checkOrderValidity(){
     // Parse the Inventory:
-    var productStr = answers.product;  
-    var stock = productStr.split(": ")  //START HERE, this should get the current inventory
-           stock = parseInt(stock[1]);
-    var orderQty = answers.quantity;
-      console.log(`This item has ${stock} in stock.`)
-      console.log(`the order is for ${answers.quantity}`)
+      var productStr = answers.product;  
+      var stock = productStr.split(": ")  //START HERE, this should get the current inventory
+            stock = parseInt(stock[1]);
+      var orderQty = answers.quantity;
 
-      // Some math to determine whether there is enough stock
-      if (stock - orderQty > 0) {
-        console.log("all good")
-        orderValid = true;
+    // Some math to determine whether there is enough stock
+      if (stock < 1){
+        console.log("Sorry, we don't have any of that item in stock")
+      } else if (stock - orderQty > 0) {
+        console.log("                                                       "); 
+        console.log("                                                       "); 
+        console.log("Sure, let me ring that up!")
+        console.log("                                                       "); 
+        placeOrder();
       }
       else {
-        console.log("not ok")
-        orderValid = false;
+        console.log("                                                       "); 
+        console.log("                                                       "); 
+        console.log(`Sorry, we don't have that many, we only have ${stock} of that item`);
+        console.log("Give it some thought and try again:"); 
+        console.log("                                                       "); 
+        welcomeMessage();
       }
-      
-      
-      
     }  
 
     function placeOrder(){
@@ -211,14 +221,26 @@ function askForOrder() {
         var quantity = answers.quantity;
         var productTotal = quantity * price;
         var newOrder = new ProductOrder(product, price, quantity, productTotal);
+        
+
+
+      // Add to the totalBill
+        totalBill = totalBill + productTotal;
+
+      //Report back to the user:
         newOrder.printInfo();
+        console.log("                                                       "); 
+        console.log(`     Your total bills so far is $${totalBill}`)
+        console.log("                                                       "); 
+        console.log("                                                       "); 
+        askIfBuyAgain();
 
       // Reduce Inventory
       reduceInventory(product, price, quantity, productTotal, stock);
 
       // Display Updated Inventory:
       // FOR DEV PURPOSES
-      displayUpdatedInventory();  
+      // displayUpdatedInventory();  
     }
 
   })    
@@ -228,7 +250,6 @@ function askForOrder() {
 
 function reduceInventory(product, price, quantity, productTotal, stock){
   var newStock = stock - quantity;
-  console.log(`the quantity should be ${quantity}`)
   connection.query(
     `UPDATE inventory
      SET stock = ${newStock}
@@ -239,6 +260,24 @@ function reduceInventory(product, price, quantity, productTotal, stock){
 }
 
 
+function askIfBuyAgain(){
+  inquirer
+    .prompt([
+      {
+        name: "confirm",
+        type: "list",
+        message: "Would you like to buy anything else?",
+        choices: ["Yes","No"]
+      }
+      ])
+    .then(function(answer){
+      if (answer.confirm == "Yes") {
+        askForOrder();
+      } else {
+        orderComplete()
+      }
+    })
+};
 
 
 
@@ -246,10 +285,19 @@ function reduceInventory(product, price, quantity, productTotal, stock){
 
 
 
-function displayUpdatedInventory() {
+
+
+function orderComplete(){
   console.log("                                                       ");  
   console.log("                                                       ");  
   console.log("-------------------------------------------------------");
-  console.log("//---                  INVENTORY:                 ---//");
-  displayProducts();
+  console.log("                                                       "); 
+  console.log("                                                       ");  
+  console.log("          Thanks for shopping with us today!")
+  console.log(`             Your total is $${totalBill}`)
+  console.log("                                                       ");  
+  console.log("                                                       ");  
+  console.log("-------------------------------------------------------");
+  console.log("                                                       ");  
+  connection.end();
 }
