@@ -72,7 +72,7 @@ connection.connect(function(err) {
   console.log("            What are you in the market for?            ");
   console.log("                                                       ");  
   welcomeMessage();
-  connection.end();
+  // connection.end();
 });
 
 
@@ -88,7 +88,7 @@ function ProductOrder(product, productPrice, quantity, productTotal) {
   this.quantity = quantity;
   this.productTotal = productTotal;
   this.printInfo = function() {
-  console.log(`Your order: \nProduct: ${this.product} \nPrice: ${this.productPrice} \nQuantity: ${this.quantity} \nTotal for this item: $${this.productTotal}`);
+  console.log(`Your order: \nProduct: ${this.product} \nPrice: $${this.productPrice} \nQuantity: ${this.quantity} \nTotal for this item: $${this.productTotal}`);
   };
 };
 
@@ -106,7 +106,6 @@ function ProductOrder(product, productPrice, quantity, productTotal) {
           name: "confirm",
           type: "confirm",
           message: "Would you like to buy an instrument?",
-          // choices: ["Yes", "No"]
         }
       ])
       .then(function(answer){
@@ -124,22 +123,14 @@ function ProductOrder(product, productPrice, quantity, productTotal) {
     connection.query("SELECT * FROM inventory", function(err,res){
       if(err) throw err;
       for (var i = 0; i < res.length; i++){
-        var product = `${res[i].product_name} | $${res[i].price}`;
+        var product = `${res[i].product_name} | $${res[i].price}, (In stock: ${res[i].stock})`;
         productArr.push(product);
       }
     })
   }
 
-  // Pull PRICES from data base
-  // function generatePriceArr(){
-  //   connection.query("SELECT * FROM inventory", function(err,res){
-  //     if(err) throw err;
-  //     for (var i = 0; i < res.length; i++){
-  //       var product = res[i].price;
-  //       priceArr.push(product);
-  //     }
-  //   })
-  // }
+
+
 
 
 function displayProducts(){
@@ -148,7 +139,7 @@ function displayProducts(){
   connection.query("SELECT * FROM inventory", function(err, res) {
     if (err) throw err;
     for (var i = 0; i < res.length; i++){
-      console.log(`||    ${res[i].product_name}, $${res[i].price}`)
+      console.log(`${res[i].stock}|${res[i].product_name}|${res[i].price}`)
     }
     console.log("_____")
   })
@@ -168,22 +159,64 @@ function askForOrder() {
           message: "How many would you like to buy?"
         }
     ]).then(function(answers){
+      //Parse String:
+      var productStr = answers.product;
+      // productStr = productStr.split("|");
+
+      // Parse the Inventory:
+        var stock = productStr.split(": ")
+            stock = parseInt(stock[1]);
+
       // Parse the Price:
-        var priceClip = answers.product;
-        priceClip = priceClip.split("$");
-        var price = parseInt(priceClip[1]);
+        var price = productStr.split("$");
+            price = parseInt(price[1]);
 
       // Parse the Product
-        var productClip = answers.product;
-        productClip = productClip.split(" |");
-        var product = productClip[0];
+        var product = productStr.split(" |");
+            product = product[0];
 
-      var productTotal = answers.quantity * price;
-      var newOrder = new ProductOrder(product, price, answers.quantity, productTotal);
-      newOrder.printInfo();
-      
+      // Build Order:
+        var quantity = answers.quantity;
+        var productTotal = quantity * price;
+        var newOrder = new ProductOrder(product, price, quantity, productTotal);
+        newOrder.printInfo();
+
+      // Reduce Inventory
+      reduceInventory(product, price, quantity, productTotal, stock);
+
+      // Display Updated Inventory:
+      // FOR DEV PURPOSES
+      displayUpdatedInventory();  
       }
     )    
 };
 
 
+
+function reduceInventory(product, price, quantity, productTotal, stock){
+  var newStock = stock - quantity;
+  console.log(`the quantity should be ${quantity}`)
+  connection.query(
+    `UPDATE inventory
+     SET stock = ${newStock}
+     WHERE product_name = "${product}"`, 
+  function(err, res) {
+    if (err) throw err;
+  })
+}
+
+
+
+
+
+
+
+
+
+function displayUpdatedInventory() {
+  console.log("                                                       ");  
+  console.log("                                                       ");  
+  console.log("-------------------------------------------------------");
+  console.log("//---                  INVENTORY:                 ---//");
+  displayProducts();
+}
