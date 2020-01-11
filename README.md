@@ -1,4 +1,4 @@
-<h1>Music Shop<h1>
+<h1>Music Shop</h1>
 <hr>
 <p>This is an app that runs in terminal simulating a musical shop online. Users can:</p>
 <ul>
